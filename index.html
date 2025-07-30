@@ -59,9 +59,10 @@
       max-width: 90%;
       cursor: move;
       user-select: none;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
+      resize: both;
+      overflow: auto;
+      min-width: 100px;
+      min-height: 50px;
     }
 
     .controls {
@@ -152,7 +153,7 @@
       messageEl.style.fontFamily = fontSelect.value;
     });
 
-    // Initial font set
+    // Initial font
     messageEl.style.fontFamily = fontSelect.value;
 
     // Download card
@@ -170,34 +171,43 @@
       alert('Please upload your image manually to X with your own post — and don’t forget the hashtags!\n\n#ThankYouForDandelion #魔法少女ダンデライオン #MagicalGirlDandelion');
     });
 
-    // Dragging logic
+    // Dragging logic (respects resizing)
     let isDragging = false;
-    let offset = { x: 0, y: 0 };
+    let offsetX = 0;
+    let offsetY = 0;
 
     messageEl.addEventListener('mousedown', (e) => {
-      isDragging = true;
-      offset.x = e.clientX - messageEl.offsetLeft;
-      offset.y = e.clientY - messageEl.offsetTop;
-      messageEl.style.transform = 'none'; // remove initial center transform
-    });
+      // Only drag if the click is not near the bottom-right corner (resize area)
+      const bounds = messageEl.getBoundingClientRect();
+      if (e.offsetX > bounds.width - 20 && e.offsetY > bounds.height - 20) return;
 
-    document.addEventListener('mouseup', () => {
-      isDragging = false;
+      isDragging = true;
+      const rect = messageEl.getBoundingClientRect();
+      offsetX = e.clientX - rect.left;
+      offsetY = e.clientY - rect.top;
+      messageEl.style.transform = 'none'; // remove center transform on first drag
     });
 
     document.addEventListener('mousemove', (e) => {
       if (isDragging) {
-        let parentRect = card.getBoundingClientRect();
-        let newX = e.clientX - offset.x - parentRect.left;
-        let newY = e.clientY - offset.y - parentRect.top;
+        const cardRect = card.getBoundingClientRect();
+        let x = e.clientX - cardRect.left - offsetX;
+        let y = e.clientY - cardRect.top - offsetY;
 
-        // Keep inside bounds
-        newX = Math.max(0, Math.min(newX, card.offsetWidth - messageEl.offsetWidth));
-        newY = Math.max(0, Math.min(newY, card.offsetHeight - messageEl.offsetHeight));
+        // Bounds
+        const maxX = card.clientWidth - messageEl.offsetWidth;
+        const maxY = card.clientHeight - messageEl.offsetHeight;
 
-        messageEl.style.left = newX + 'px';
-        messageEl.style.top = newY + 'px';
+        x = Math.max(0, Math.min(x, maxX));
+        y = Math.max(0, Math.min(y, maxY));
+
+        messageEl.style.left = `${x}px`;
+        messageEl.style.top = `${y}px`;
       }
+    });
+
+    document.addEventListener('mouseup', () => {
+      isDragging = false;
     });
   </script>
 </body>
