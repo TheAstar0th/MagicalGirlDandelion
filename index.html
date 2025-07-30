@@ -11,8 +11,17 @@
     main { padding: 1rem; max-width: 640px; margin: 0 auto; }
     .bg-options img { width: 100px; margin: 0.5em; cursor: pointer; border: 2px solid transparent; }
     .bg-options img.selected { border-color: #007bff; }
-    #card { position: relative; width: 100%; height: 360px; background: #eee; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-    #message { position: absolute; padding: 1em; text-align: center; color: #fff; font-size: 2rem; }
+    #card { position: relative; width: 100%; height: 360px; background: #eee; display: flex; align-items: center; justify-content: center; overflow: hidden; text-align: center; }
+    #message {
+      position: absolute;
+      padding: 1em;
+      color: #fff;
+      font-size: 2rem;
+      font-family: 'Dancing Script', cursive;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+      word-wrap: break-word;
+      width: 90%;
+    }
     .controls { margin-top: 1em; }
     textarea { width: 100%; height: 80px; font-size: 1rem; }
     button { padding: 0.5em 1em; margin-top: 0.5em; font-size: 1rem; cursor: pointer; }
@@ -32,19 +41,18 @@
 
     <div class="controls">
       <p>➋ Type your message / ここにメッセージを入力してください:</p>
-      <textarea id="inputText" placeholder="Thank you for Dandelion! マジカルガールダンデライオンをありがとう！"></textarea>
+      <textarea id="inputText" placeholder="Thank you for Dandelion! マジカルガールダンデライオンをありがとう！">Thank you so much!</textarea>
       <p>Select font:</p>
       <select id="fontSelect">
         <option value="Roboto">Roboto</option>
         <option value="Open Sans">Open Sans</option>
         <option value="Lato">Lato</option>
-        <!-- add other fonts here -->
-        <option value="Dancing Script">Dancing Script</option>
+        <option value="Dancing Script" selected>Dancing Script</option>
       </select>
     </div>
 
     <div id="card">
-      <span id="message">Thank you for Dandelion! マジカルガールダンデライオンをありがとう！</span>
+      <span id="message">Thank you so much!</span>
     </div>
 
     <div class="controls">
@@ -61,34 +69,43 @@
     const input = document.getElementById('inputText');
     const fontSelect = document.getElementById('fontSelect');
 
+    // Background switching
     bgImages.forEach(img => {
       img.addEventListener('click', () => {
         bgImages.forEach(i => i.classList.remove('selected'));
         img.classList.add('selected');
         card.style.backgroundImage = `url(${img.dataset.src})`;
         card.style.backgroundSize = 'cover';
+        card.style.backgroundPosition = 'center';
       });
     });
 
+    // Live text update
     input.addEventListener('input', () => {
-      messageEl.textContent = input.value;
+      messageEl.textContent = input.value || "Thank you for Dandelion!";
     });
 
+    // Font changing
     fontSelect.addEventListener('change', () => {
       messageEl.style.fontFamily = fontSelect.value;
     });
 
+    // Initial font set
+    messageEl.style.fontFamily = fontSelect.value;
+
+    // Download card
     document.getElementById('downloadBtn').addEventListener('click', () => {
       html2canvas(card).then(canvas => {
         const link = document.createElement('a');
-        link.download = 'thank_you_hokazono.png';
+        link.download = 'thank_you_dandelion.png';
         link.href = canvas.toDataURL('image/png');
         link.click();
       });
     });
 
+    // Share (manual notice)
     document.getElementById('shareBtn').addEventListener('click', () => {
-      alert('Please upload your image manually to X with your own post—and don’t forget the hashtags! #ThankYouForDandelion #魔法少女ダンデライオン #MagicalGirlDandelion');
+      alert('Please upload your image manually to X with your own post — and don’t forget the hashtags!\n\n#ThankYouForDandelion #魔法少女ダンデライオン #MagicalGirlDandelion');
     });
   </script>
 </body>
