@@ -75,7 +75,8 @@
         bgImages.forEach(i => i.classList.remove('selected'));
         img.classList.add('selected');
         card.style.backgroundImage = `url(${img.dataset.src})`;
-        card.style.backgroundSize = 'cover';
+        card.style.backgroundSize = 'contain';
+        card.style.backgroundRepeat = 'no-repeat';
         card.style.backgroundPosition = 'center';
       });
     });
